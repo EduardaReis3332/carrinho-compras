@@ -1,3 +1,7 @@
+## GitHub Pages
+
+A aplicação está hospedada no GitHub Pages. Você pode acessá-la [aqui](https://eduardareis3332.github.io/carrinho-compras/index.html).
+
 # Carrinho de Compras com Vue.js e Supabase
 
 ## Descrição do Projeto
@@ -54,7 +58,3 @@ O código segue a estrutura do padrão Model-View-Controller (MVC) com Vue.js. A
 - Adicionar itens ao carrinho.
 - Remover itens do carrinho.
 - Finalizar a compra e salvar os dados no Supabase.
-
-## GitHub Pages
-
-A aplicação está hospedada no GitHub Pages. Você pode acessá-la [aqui](https://eduardareis3332.github.io/carrinho-compras/).
