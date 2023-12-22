@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <title>Carrinho de Compras</title>
+  <style>
+    form {
+      border: dashed black 1px;
+      width: 200px;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Carrinho de Compras com Vue.js e Supabase</h1>
+  <div id="app">
+    <form v-on:submit.prevent="addItem">
+      <p>
+        O que você precisa?
+        <input type="text" required placeholder="nome do item..." v-model="itemName" />
+      </p>
+      <p>
+        Quantidade?
+        <input type="number" placeholder="número/qtde de itens.." v-model="itemNumber" />
+      </p>
+      <button type="submit">Adicionar item</button>
+      <button type="button" @click="checkout">Finalizar Compra</button>
+    </form>
+
+    <div>
+      <h4>Lista de compras:</h4>
+      <ul>
+        <li v-for="item in shoppingList">
+          {{ item.name }}, {{ item.number }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const apiUrlCarrinho = 'https://fisvwydjawnxiwdlsiyf.supabase.co/rest/v1/carrinho';
+    const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpc3Z3eWRqYXdueGl3ZGxzaXlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDMyNTQxOTAsImV4cCI6MjAxODgzMDE5MH0.IwPsKPhjVCLEyF977DkFg_dKzd7jjdxXxh-T9d55CM4';
+    const apiAuthorization = 'Bearer ' + apiKey;
+
+    const { createApp, ref } = Vue;
+    const supabaseUrl = 'https://fisvwydjawnxiwdlsiyf.supabase.co';
+    const supabaseKey = 'process.env.SUPABASE_KEY';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const app = createApp({
+      data() {
+        return {
+          itemName: null,
+          itemNumber: null,
+          shoppingList: [{
+            name: "Tomates",
+            number: 5
+          }] // inicializa o carrinho
+        };
+      },
+      methods: {
+        addItem() {
+          let item = {
+            name: this.itemName,
+            number: this.itemNumber
+          };
+          this.shoppingList.push(item); // adiciona o item na lista
+          this.itemName = null; // limpa os dados do item
+          this.itemNumber = null;
+        },
+        checkout() {
+          const cartData = this.shoppingList.map(item => ({
+            name: item.name,
+            number: item.number,
+          }));
+
+          supabase
+            .from('carrinho')
+            .upsert(cartData, { onConflict: ['id'] })
+            .then(response => {
+              console.log('Compra finalizada! Dados do carrinho salvos:', response);
+              this.shoppingList = [];
+            })
+            .catch(error => {
+              console.error('Erro ao salvar dados do carrinho:', error);
+            });
+        },
+      },
+    });
+
+    app.mount("#app");
+  </script>
+</body>
+
+</html>
